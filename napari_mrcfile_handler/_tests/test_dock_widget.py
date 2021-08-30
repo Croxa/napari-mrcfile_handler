@@ -4,7 +4,7 @@ import pytest
 # this is your plugin name declared in your napari.plugins entry point
 MY_PLUGIN_NAME = "napari-mrcfile_handler"
 # the name of your widget(s)
-MY_WIDGET_NAMES = ["PixelSpacing"]
+MY_WIDGET_NAMES = None
 
 
 @pytest.mark.parametrize("widget_name", MY_WIDGET_NAMES)
