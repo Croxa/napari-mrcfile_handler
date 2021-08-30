@@ -1,0 +1,10 @@
+site_name: napari-mrcfile_handler
+site_description: A simple plugin to read, write and adjust mrcfiles in napari.
+site_author: Philipp Schoennenbeck
+
+theme: readthedocs
+
+repo_url: https://github.com/Croxa/napari-mrcfile_handler
+
+pages:
+- Home: index.md
