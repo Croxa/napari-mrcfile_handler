@@ -1,16 +1,22 @@
 """
-This module is an example of a barebones numpy reader plugin for napari.
+This module is an mrc file reader plugin for napari.
 
-It implements the ``napari_get_reader`` hook specification, (to create
-a reader plugin) but your plugin may choose to implement any of the hook
-specifications offered by napari.
-see: https://napari.org/docs/dev/plugins/hook_specifications.html
+This code is copied from the mrc file reader:
+https://github.com/alisterburt/napari-mrcfile-reader
+
+Added ist the metadata of pixel spacing (voxel size)
+
+
+It implements the ``napari_get_reader`` hook specification to create
+a reader plugin.
+see: https://napari.org/docs/plugins/hook_specifications.html
 
 Replace code below accordingly.  For complete documentation see:
-https://napari.org/docs/dev/plugins/for_plugin_developers.html
+https://napari.org/docs/plugins/for_plugin_developers.html
 """
 import numpy as np
 from napari_plugin_engine import napari_hook_implementation
+import mrcfile
 
 
 @napari_hook_implementation
@@ -35,7 +41,8 @@ def napari_get_reader(path):
         path = path[0]
 
     # if we know we cannot read the file, we immediately return None.
-    if not path.endswith(".npy"):
+    extensions = ".mrc", ".mrcs", ".map"
+    if not path.endswith(extensions):
         return None
 
     # otherwise we return the *function* that can read ``path``.
@@ -67,12 +74,19 @@ def reader_function(path):
     # handle both a string and a list of strings
     paths = [path] if isinstance(path, str) else path
     # load all files into array
-    arrays = [np.load(_path) for _path in paths]
+    
+    arrays = [mrcfile.open(_path).data for _path in paths]
+     
     # stack arrays into single array
     data = np.squeeze(np.stack(arrays))
 
     # optional kwargs for the corresponding viewer.add_* method
-    add_kwargs = {}
+    # https://napari.org/docs/api/napari.components.html#module-napari.components.add_layers_mixin
+
+    header_data = mrcfile.open(paths[0],header_only=True)
+    voxel_size = header_data.voxel_size.x
+    
+    add_kwargs = {"metadata":{"pixel_spacing":voxel_size}}
 
     layer_type = "image"  # optional, default is "image"
     return [(data, add_kwargs, layer_type)]
