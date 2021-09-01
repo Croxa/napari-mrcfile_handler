@@ -86,7 +86,7 @@ def reader_function(path):
     # optional kwargs for the corresponding viewer.add_* method
     # https://napari.org/docs/api/napari.components.html#module-napari.components.add_layers_mixin
 
-    header_data = mrcfile.open(paths[0],header_only=True)
+    header_data = mrcfile.open(paths[0],permissive=True,header_only=True)
     voxel_size = header_data.voxel_size.x
     
     add_kwargs = {"metadata":{"pixel_spacing":voxel_size}}
